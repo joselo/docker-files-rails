@@ -1,0 +1,20 @@
+FROM nginx:alpine
+
+# set environment variable
+ENV RAILS_ROOT /app
+
+# set work directory
+WORKDIR $RAILS_ROOT
+
+# create a log directory where we will place the nginx log files
+RUN mkdir log
+
+# copy over public static files as nginx can serve this more quickly than our app
+COPY public public/
+
+# copy of the nginx configuration file to our container
+COPY docker/web/nginx.conf /etc/nginx/nginx.conf
+
+# start nginx
+CMD [ "/usr/sbin/nginx" ]
+
