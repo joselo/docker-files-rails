@@ -1,0 +1,56 @@
+version: '3.2'
+services:
+
+  web:
+    restart: always
+    env_file: ./docker/web/.env
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    volumes:
+      - ./public:/app/public
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    links:
+      - app
+
+  app:
+    image: apufacil_app:production
+    restart: always
+    command: bin/app-start.sh
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    environment:
+      POSTGRESQL_HOST: db
+      RAILS_ENV: production
+      PORT: 3000
+      BUNDLE_GEMFILE: /app/Gemfile
+      BUNDLE_JOBS: 20
+      BUNDLE_PATH: /bundle
+    volumes:
+      - .:/app
+      - ./public:/app/public
+      - uploads:/app/public/uploads
+      - bundle:/bundle
+    expose:
+      - 3000
+    depends_on:
+      - db
+    links:
+      - db
+
+  db:
+    restart: always
+    image: postgres:10.1-alpine
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
+  uploads:
+  bundle:
+

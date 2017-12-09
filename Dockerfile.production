@@ -1,0 +1,15 @@
+FROM ruby:2.4.2-alpine
+
+ENV BUILD_PACKAGES="build-base" \
+    DEV_PACKAGES="ruby-dev openssl-dev postgresql-dev libxml2-dev libxslt-dev tzdata" \
+    EXTRA_PACKAGES="git netcat-openbsd"
+
+RUN \
+  apk --update --upgrade add $BUILD_PACKAGES $DEV_PACKAGES $EXTRA_PACKAGES && \
+  gem install -N bundler && \
+  mkdir /app && \
+  mkdir /bundle
+
+WORKDIR /app
+
+COPY . /app
